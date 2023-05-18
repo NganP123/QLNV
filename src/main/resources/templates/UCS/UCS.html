@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>UCS Algorithm Demo</title>
+</head>
+
+<body>
+	<h1>UCS Algorithm Demo</h1>
+	<form method="POST">
+		<label for="startVertex">Start Vertex:</label>
+		<input type="text" id="startVertex" name="startVertex" required>
+		<br>
+		<label for="endVertex">End Vertex:</label>
+		<input type="text" id="endVertex" name="endVertex" required>
+		<br>
+		<label for="edges">Edges (comma-separated):</label>
+		<input type="text" id="edges" name="edges" required>
+		<br>
+		<button type="submit">Find Path</button>
+	</form>
+
+	<div id="result">
+		<h2>Result:</h2>
+		<p><strong>Path:</strong> {{path}}</p>
+		<p><strong>Cost:</strong> {{cost}}</p>
+	</div>
+
+	<!-- Include JavaScript code to handle form submission and perform UCS algorithm -->
+	<script>
+        class PriorityQueue {
+            constructor() {
+                this.heap = [];
+            }
+         
+            // Helper Methods
+            getLeftChildIndex(parentIndex) {
+                return 2 * parentIndex + 1;
+            }
+         
+            getRightChildIndex(parentIndex) {
+                return 2 * parentIndex + 2;
+            }
+         
+            getParentIndex(childIndex) {
+                return Math.floor((childIndex - 1) / 2);
+            }
+         
+            hasLeftChild(index) {
+                return this.getLeftChildIndex(index) < this.heap.length;
+            }
+         
+            hasRightChild(index) {
+                return this.getRightChildIndex(index) < this.heap.length;
+            }
+         
+            hasParent(index) {
+                return this.getParentIndex(index) >= 0;
+            }
+         
+            leftChild(index) {
+                return this.heap[this.getLeftChildIndex(index)];
+            }
+         
+            rightChild(index) {
+                return this.heap[this.getRightChildIndex(index)];
+            }
+         
+            parent(index) {
+                return this.heap[this.getParentIndex(index)];
+            }
+         
+            swap(indexOne, indexTwo) {
+                const temp = this.heap[indexOne];
+                this.heap[indexOne] = this.heap[indexTwo];
+                this.heap[indexTwo] = temp;
+            }
+         
+            peek() {
+                if (this.heap.length === 0) {
+                    return null;
+                }
+                return this.heap[0];
+            }
+             
+            // Removing an element will remove the
+            // top element with highest priority then
+            // heapifyDown will be called
+            remove() {
+                if (this.heap.length === 0) {
+                    return null;
+                }
+                const item = this.heap[0];
+                this.heap[0] = this.heap[this.heap.length - 1];
+                this.heap.pop();
+                this.heapifyDown();
+                return item;
+            }
+         
+            add(item) {
+                this.heap.push(item);
+                this.heapifyUp();
+            }
+         
+            heapifyUp() {
+                let index = this.heap.length - 1;
+                while (this.hasParent(index) && this.parent(index) > this.heap[index]) {
+                    this.swap(this.getParentIndex(index), index);
+                    index = this.getParentIndex(index);
+                }
+            }
+            isEmpty(){
+                if(this.heap.length ===0 ) return true
+            }
+            heapifyDown() {
+                let index = 0;
+                while (this.hasLeftChild(index)) {
+                    let smallerChildIndex = this.getLeftChildIndex(index);
+                    if (this.hasRightChild(index) && this.rightChild(index) < this.leftChild(index)) {
+                        smallerChildIndex = this.getRightChildIndex(index);
+                    }
+                    if (this.heap[index] < this.heap[smallerChildIndex]) {
+                        break;
+                    } else {
+                        this.swap(index, smallerChildIndex);
+                    }
+                    index = smallerChildIndex;
+                }
+            }
+        }
+		const form = document.querySelector('form');
+		const resultDiv = document.querySelector('#result');
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+
+			const startVertex = document.querySelector('#startVertex').value;
+			const endVertex = document.querySelector('#endVertex').value;
+			const edgesStr = document.querySelector('#edges').value;
+			const edges = edgesStr.split(',').map((edge) => edge.trim().split(' '));
+
+			// Build adjacency list and cost map from edges
+			const adj = new Map();
+			const cost = new Map();
+			for (let [u, v, w] of edges) {
+				if (!adj.has(u)) {
+					adj.set(u, []);
+				}
+				if (!adj.has(v)) {
+					adj.set(v, []);
+				}
+				adj.get(u).push(v);
+				adj.get(v).push(u);
+				cost.set(`${u}-${v}`, parseInt(w));
+				cost.set(`${v}-${u}`, parseInt(w));
+			}
+
+			// Perform UCS algorithm
+			const {path, cost: totalCost} = await ucs(startVertex, endVertex, adj);
+
+			// Update result in HTML
+			resultDiv.innerHTML = `
+          <h2>Result:</h2>
+          <p><strong>Path:</strong> ${path.join(' -> ')}</p>
+          <p><strong>Cost:</strong> ${totalCost}</p>
+        `;
+		});
+		// UCS algorithm
+		async function ucs(startVertex, endVertex, adj) {
+			const pq = new PriorityQueue({comparator: (a, b) => a.priority - b.priority});
+			const visited = new Set();
+			const prev = new Map();
+			const costSoFar = new Map();
+
+			pq.remove({vertex: startVertex, priority: 0});
+			visited.add(startVertex);
+			prev.set(startVertex, null);
+			costSoFar.set(startVertex, 0);
+
+			while (!pq.isEmpty()) {
+				const {vertex: curr, priority: currPriority} = pq.remove();
+				if (curr === endVertex) {
+					break;
+				}
+				for (let {neighbor, weight} of adj.get(curr)) {
+					const newCost = costSoFar.get(curr) + weight;
+					if (!visited.has(neighbor) || newCost < costSoFar.get(neighbor)) {
+						visited.add(neighbor);
+						costSoFar.set(neighbor, newCost);
+						pq.add({vertex: neighbor, priority: newCost});
+						prev.set(neighbor, curr);
+					}
+				}
+			}
+
+			// Reconstruct path from startVertex to endVertex using prev map
+			const path = [];
+			let curr = endVertex;
+			while (curr !== startVertex) {
+				path.push(curr);
+				curr = prev.get(curr);
+			}
+			path.unshift(startVertex);
+
+			return {path, cost: costSoFar.get(endVertex)};
+		}
+	</script>
+</body>
+
+</html>

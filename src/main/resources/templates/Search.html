@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    header {
+        text-align: center;
+    }
+
+    header input {
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<body>
+    <main>
+        <header class="">
+            <input type="text" name="" id="algo" placeholder="Algorithm">
+            <button class="btn__algorithm">Search</button>
+
+        </header>
+        <section class=" content1 hidden ">
+            <h1>Định nghĩa</h1>
+            <p>
+                Thuật toán UCS (Uniform-Cost Search) là một thuật toán tìm kiếm đường đi từ 1 đỉnh xuất phát
+                đến 1 đỉnh đích trong đồ thị với giả sử rằng mỗi cạnh có 1 chi phí nhất định</p>
+            <h2>Thuật toán UCS</h2>
+            <p><strong>Bước 1</strong>: Khởi tạo
+            </p>
+            <ol>
+
+                <li> Khởi tạo đỉnh bắt đầu và đặt giá trị của nó bằng 0</li>
+                <li>Sau đó đưa nó vào hàng đợi ưu tiên(priority queue) với giá trị ưu tiên là giá trị g của đỉnh đó</li>
+            </ol>
+            <p><strong>Bước 2</strong>: Lặp
+            <ol>
+                <li>Với mỗi vòng lặp lấy ra đỉnh có giá trị ưu tiên nhỏ nhất từ hàng đợi ưu tiên</li>
+                <li>Nếu đỉnh đó là đíc kết thúc thuật toán và trả về đường đi tìm được
+                </li>
+                <li> Nếu không mở rộng đỉnh đó bằng cách xét tất cả các đỉnh kề với nó và tính toán giá trị g mới cho
+                    đỉnh đó</li>
+                <li>Nếu đỉnh kề chưa được thăm đưa nó vào hàng đợi ưu tiên với giá trị ưu tiên là giá trị g của nó</li>
+            </ol>
+            <p><strong>Bước 3</strong>: Cập nhật
+            <ul>
+                <li>Nếu đỉnh đã được thăm và giá trị g của nó lớn hơn giá trị g mới tính toán được, cập nhật giá trị g
+                    mới và đẩy lại đỉnh vào hàng đợi ưu tiên với giá trị g mới</li>
+            </ul>
+            <p><strong>Bước 4</strong>: Lặp lại bước 3 4 cho đến khi đến đích hoặc hàng đợi ưu tiên trống
+            <p><strong>Bước 5</strong>: Kết thúc
+            <ul>
+                <li>Nếu ko tìm đc đường đi in ra ko tìm được và kết thúc</li>
+            </ul>
+
+
+        </section>
+        <section class=" content2 hidden">
+            <h1>Định nghĩa BFS</h1>
+            <p>
+                Thuật toán duyệt đồ thị ưu tiên chiều rộng (Breadth-first search - BFS) là một trong những
+                thuật toán tìm kiếm cơ bản và thiết yếu trên đồ thị. Mà trong đó, những đỉnh nào gần đỉnh xuất phát hơn
+                sẽ được duyệt trước.</p>
+            <h2>Thuật toán </h2>
+            <p><strong>Bước 1</strong>: Khởi tạo
+            </p>
+            <ol>
+
+                <li> Các đỉnh đều ở trạng thái chưa được đánh dấu trừ đỉnh nguồn</li>
+                <li>1 hàng đợi ban đầu chỉ chứa 1 đỉnh s</li>
+            </ol>
+            <p><strong>Bước 2</strong>: lặp lại các bước sau cho đến khi hàng đợi rỗng
+            <ol>
+                <li> Lấy đỉnh u ra khỏi hàng đợi</li>
+                <li>xét tất cả các đỉnh v kề với đỉnh u mà chưa được đánh dấu, với mỗi đính v đó
+                    <ul>
+                        <li>
+                            đánh dấu v đã thăm</li>
+                        <li> lưu lại đường đi từ u đến v</li>
+                        <li>đẩy v vào hàng đợi( đỉnh v sẽ chờ được duyệt tại các bước sau)</li>
+                    </ul>
+                </li>
+            </ol>
+            <p><strong>Bước 3</strong>: Truy vết đường đi
+
+
+
+        </section>
+    </main>
+    <script>
+        const sectionUcs = document.querySelector('.content1')
+        const sectionBfs = document.querySelector('.content2')
+        const algo = document.querySelector('#algo')
+
+        document.querySelector('.btn__algorithm').addEventListener('click', async (e) => {
+            const input = algo.value.toLowerCase()
+            console.log(input)
+
+            if (input === 'bfs') {
+
+                sectionBfs.classList.remove('hidden')
+                sectionUcs.classList.add('hidden')
+
+            } else if (input === 'ucs') {
+                sectionUcs.classList.remove('hidden')
+                sectionBfs.classList.add('hidden')
+            }
+        })
+
+    </script>
+</body>
+
+</html>

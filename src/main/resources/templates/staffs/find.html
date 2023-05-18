@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.ogn">
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>Insert title here</title>
+	</head>
+	<body>
+		<h1> List All Staffs</h1>
+		<form th:action="@{/staffs/find}">
+			Name: 
+			<input type = "text" name = "name" placeholder = "Name"/> 
+			<input type = "submit" value = "Find" />
+		</form>
+		<hr />
+		<table>
+			<tr>
+				<td> Staff ID</td>					
+				<td> Name </td>
+				<td> Birthday </td>
+				<td> Gender</td>
+				<td> Note</td>
+				<td> Photo</td>
+				<td >Phone </td>
+				<td > Salary</td>
+				<td>  Department ID</td>
+				<td > &nbsp; </td>
+			</tr>
+			<tr th:each = "staff : ${staffs}">
+				<td  th:text = "${staff.id}" > </td>
+				<td  th:text = "${staff.name}" ></td>
+				<td  th:text = "${staff.birthday}" > </td>
+				<td  th:text = "${staff.gender}" > </td>
+				<td  th:text = "${staff.note}" > </td>
+				<td  > 
+					<img th:src = "@{'/getimage/'+ ${staff.id}}" th:alt = "${staff.photo}" />
+				</td>
+				<td  th:text = "${staff.phone}" > </td>
+				<td  th:text = "${staff.salary}" > </td>
+				<td  th:text = "${staff.depart.name}" > </td>
+				<!--<td >
+					<a th:href = "@{'/staffs/edit/' + ${staff.id}}"> Edit </a>  | 
+					<a th:href = "@{'/staffs/delete/' + ${staff.id}}"> Delete </a>
+				</td>-->
+				
+			</tr>
+			
+		</table>
+		
+	</body>
+</html>
