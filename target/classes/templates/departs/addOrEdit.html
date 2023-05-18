@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.ogn">
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>Insert title here</title>
+	</head>
+	<body>
+		<h1> Phòng Ban </h1>
+		<div th:if = "${message != null}">
+			<h3 th:text = "${message}" > </h3>
+		</div>
+		<form th:action="@{/departs/saveOrUpdate}" method="post" th:object="${depart}">
+			<div th:if = "${id >0 }">
+				<input th:field="*{id}" placeholder = "Department ID"> <br />
+			</div>
+			<input type = "text" th:field = "*{name}" placeholder = "Name"/> <br />
+			<input type = "submit" value = "Add" th:if = "${id <= 0}" />
+			<input type = "submit" value = "Update" th:if = "${id > 0}" />
+			<a  th:href = "@{/departs/add}"> New </a>
+			<br />
+			<a th:href="@{/departs/list}"> List Departments</a>
+		</form>
+	</body>
+</html>

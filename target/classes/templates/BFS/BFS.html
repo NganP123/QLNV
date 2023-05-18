@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>BFS Algorithm Demo</title>
+  </head>
+  <body>
+    <h1>BFS Algorithm Demo</h1>
+    <form method="POST">
+      <label for="startVertex">Start Vertex:</label>
+      <input type="text" id="startVertex" name="startVertex" required>
+      <br>
+      <label for="endVertex">End Vertex:</label>
+      <input type="text" id="endVertex" name="endVertex" required>
+      <br>
+      <label for="edges">Edges (comma-separated):</label>
+      <input type="text" id="edges" name="edges" required>
+      <br>
+      <button type="submit">Find Path</button>
+    </form>
+    
+    <div id="result">
+      <h2>Result:</h2>
+      <p><strong>Path:</strong> {{path}}</p>
+      <p><strong>Visited Nodes:</strong> {{visitedNodes}}</p>
+    </div>
+    
+    <!-- Include JavaScript code to handle form submission and perform BFS algorithm -->
+    <script>
+      const form = document.querySelector('form');
+      const resultDiv = document.querySelector('#result');
+      
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        const startVertex = document.querySelector('#startVertex').value;
+        const endVertex = document.querySelector('#endVertex').value;
+        const edgesStr = document.querySelector('#edges').value;
+        const edges = edgesStr.split(',').map((edge) => edge.trim().split(' '));
+        
+        // Build adjacency list from edges
+        const adj = new Map();
+        for (let [u, v] of edges) {
+          if (!adj.has(u)) {
+            adj.set(u, []);
+          }
+          if (!adj.has(v)) {
+            adj.set(v, []);
+          }
+          adj.get(u).push(v);
+          adj.get(v).push(u);
+        }
+        
+        // Perform BFS algorithm
+        const {path, visitedNodes} = await bfs(startVertex, endVertex, adj);
+        
+        // Update result in HTML
+        resultDiv.innerHTML = `
+          <h2>Result:</h2>
+          <p><strong>Path:</strong> ${path.join(' -> ')}</p>
+          <p><strong>Visited Nodes:</strong> ${visitedNodes.join(', ')}</p>
+        `;
+      });
+      
+      // BFS algorithm
+      async function bfs(startVertex, endVertex, adj) {
+        const queue = [startVertex];
+        const visited = new Set();
+        visited.add(startVertex);
+        const prev = new Map();
+        prev.set(startVertex, null);
+        
+        while (queue.length > 0) {
+          const curr = queue.shift();
+          if (curr === endVertex) {
+            break;
+          }
+          for (let neighbor of adj.get(curr)) {
+            if (!visited.has(neighbor)) {
+              visited.add(neighbor);
+              queue.push(neighbor);
+              prev.set(neighbor, curr);
+            }
+          }
+        }
+        
+        // Reconstruct path from startVertex to endVertex using prev map
+        const path = [];
+        let curr = endVertex;
+        while (curr !== null) {
+          path.unshift(curr);
+          curr = prev.get(curr);
+        }
+        
+        return {path, visitedNodes: Array.from(visited)};
+    }
+</script>
+</body>
+</html>
